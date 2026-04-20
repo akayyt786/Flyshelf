@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Xcode
+build/
+DerivedData/
+*.xcodeproj
+*.xcworkspace
+*.xcscheme
+*.xcbkptlist
+*.xcuserstate
+
+# Environment
+.env
+.antigravity
+build.log
