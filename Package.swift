@@ -2,20 +2,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "PocketShelf",
+    name: "FlyShelf",
     platforms: [
         .macOS(.v14)
     ],
     products: [
-        .executable(name: "PocketShelf", targets: ["PocketShelf"])
+        .executable(name: "FlyShelf", targets: ["FlyShelf"])
     ],
     dependencies: [],
     targets: [
         .executableTarget(
-            name: "PocketShelf",
+            name: "FlyShelf",
             dependencies: [],
-            path: "PocketShelf",
-            exclude: ["Resources", "Resources/PocketShelf.entitlements", "Info.plist"],
+            path: "FlyShelf",
+            exclude: ["Resources", "Resources/FlyShelf.entitlements", "Info.plist"],
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-enable-bare-slash-regex"])
             ]

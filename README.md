@@ -1,22 +1,25 @@
-# 🥇 PocketShelf
+# 🥇 FlyShelf
 
 ### *The Best Free & Open-Source Alternative to Dropover, Yoink, and Dropzone*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Personal_Use-blue.svg)](LICENSE)
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
 [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://apple.com/macos)
 
-**PocketShelf** is the magical, floating shelf for macOS that you've been waiting for. It outranks the competition by being **100% Free**, **Open-Source**, and **fully AI-powered on-device**. No cloud, no subscription, no tracking.
+**FlyShelf** is the magical, floating shelf for macOS that you've been waiting for. It outranks the competition by being **Free for Personal Use**, **Source-Available**, and **fully AI-powered on-device**. 
+
+> [!CAUTION]
+> **LEGAL NOTICE**: This software is provided for personal, non-commercial use only. Commercial redistribution or resale of FlyShelf is strictly prohibited and protected under copyright law.
 
 ---
 
-## 🏆 Why PocketShelf? (Comparison)
+## 🏆 Why FlyShelf? (Comparison)
 
-| Feature | **PocketShelf** | Dropover | Yoink |
+| Feature | **FlyShelf** | Dropover | Yoink |
 | :--- | :--- | :--- | :--- |
-| **Pricing** | **$0 (Free Forever)** | $5.99 (Paid) | $8.99 (Paid) |
+| **Pricing** | **$0 (Personal Use)** | $5.99 (Paid) | $8.99 (Paid) |
 | **AI Smart Renaming** | **✅ (100% Local)** | ❌ | ❌ |
-| **Open Source** | **✅ Yes (MIT)** | ❌ No | ❌ No |
+| **Legal Protection** | **✅ Protected** | ⚠️ Unknown | ⚠️ Unknown |
 | **Privacy** | **✅ Zero-Cloud** | ⚠️ Partial | ⚠️ Partial |
 | **Shake to Open** | **✅ Yes** | ✅ Yes | ❌ No |
 | **Notch Glow** | **✅ Yes** | ❌ No | ❌ No |
@@ -40,7 +43,7 @@
 
 ### Direct Download
 1.  Download the latest release from the [Releases](https://github.com/armankatia/pocketshelf/releases) page.
-2.  Drag `PocketShelf.app` to your `/Applications` folder.
+2.  Drag `FlyShelf.app` to your `/Applications` folder.
 
 ### Homebrew (Coming Soon)
 ```bash
@@ -51,7 +54,7 @@ brew install pocketshelf
 
 ## 🔒 Privacy
 
-PocketShelf is built with privacy as a first-class citizen. 
+FlyShelf is built with privacy as a first-class citizen. 
 *   **No File Data Leaves Your Mac**: All AI processing (Renaming, Sorting, OCR) happens locally on the Apple Neural Engine.
 *   **Zero Tracking**: No analytics, no accounts, no cloud sync.
 

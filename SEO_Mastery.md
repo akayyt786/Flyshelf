@@ -1,6 +1,6 @@
-# 🚀 PocketShelf — SEO Mastery & Marketing Kit
+# 🚀 FlyShelf — SEO Mastery & Marketing Kit
 
-Use these assets to launch PocketShelf and dominate the "Free Dropover Alternative" search category.
+Use these assets to launch FlyShelf and dominate the "Free Dropover Alternative" search category.
 
 ---
 
@@ -19,12 +19,12 @@ Go to your GitHub repo's **About** settings and copy-paste these:
 ## 📢 Launch Templates
 
 ### Reddit (r/macapps) - "The Honest Founder" Pitch
-**Title:** I was tired of paid alternatives for macOS file stashing, so I built PocketShelf (100% Free & Open Source)
+**Title:** I was tired of paid alternatives for macOS file stashing, so I built FlyShelf (100% Free & Open Source)
 
 **Body:**
 > Hey r/macapps!
 >
-> Like many of you, I love the "shelf" concept for dragging files, but I wasn't a fan of the subscriptions or paid tiers in existing apps. So I spent the last few weeks building **PocketShelf**.
+> Like many of you, I love the "shelf" concept for dragging files, but I wasn't a fan of the subscriptions or paid tiers in existing apps. So I spent the last few weeks building **FlyShelf**.
 >
 > **What makes it different?**
 > 1. **100% Free & Open Source**: No catches, no "pro" versions for basic features.
@@ -33,7 +33,7 @@ Go to your GitHub repo's **About** settings and copy-paste these:
 > 4. **Shake to Open**: The same gesture you love, now in a free app.
 >
 > I'd love your feedback!
-> **GitHub:** https://github.com/akayyt786/PocketShelf
+> **GitHub:** https://github.com/akayyt786/FlyShelf
 
 ---
 
@@ -45,15 +45,15 @@ cask "pocketshelf" do
   version "1.0.0"
   sha256 "REPLACE_WITH_SHA256_OF_APP_DMG"
 
-  url "https://github.com/akayyt786/PocketShelf/releases/download/v#{version}/PocketShelf.dmg"
-  name "PocketShelf"
+  url "https://github.com/akayyt786/FlyShelf/releases/download/v#{version}/FlyShelf.dmg"
+  name "FlyShelf"
   desc "Magical floating shelf for macOS"
-  homepage "https://github.com/akayyt786/PocketShelf"
+  homepage "https://github.com/akayyt786/FlyShelf"
 
-  app "PocketShelf.app"
+  app "FlyShelf.app"
 
   zap trash: [
-    "~/Library/Application Support/PocketShelf",
+    "~/Library/Application Support/FlyShelf",
     "~/Library/Preferences/com.pocketshelf.macos.plist",
   ]
 end
@@ -66,4 +66,4 @@ Include these in any social posts or blog articles to capture high-intent traffi
 - "Save files to notch Mac"
 - "How to move files between spaces Mac easily"
 - "MacOS shelf app that doesn't track you"
-- "Yoink vs Dropover vs PocketShelf"
+- "Yoink vs Dropover vs FlyShelf"
