@@ -1,12 +1,25 @@
 # 🥇 PocketShelf
 
-### *The Magical, On-Device AI Shelf for macOS*
+### *The Best Free & Open-Source Alternative to Dropover, Yoink, and Dropzone*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
 [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://apple.com/macos)
 
-**PocketShelf** is a premium, open-source floating shelf for macOS designed to hold your files, links, and snippets in 100% private, on-device storage. Inspired by utilities like Dropover and Yoink, PocketShelf outranks the competition by integrating **Apple's Neural Engine** for local intelligence without any cloud dependencies.
+**PocketShelf** is the magical, floating shelf for macOS that you've been waiting for. It outranks the competition by being **100% Free**, **Open-Source**, and **fully AI-powered on-device**. No cloud, no subscription, no tracking.
+
+---
+
+## 🏆 Why PocketShelf? (Comparison)
+
+| Feature | **PocketShelf** | Dropover | Yoink |
+| :--- | :--- | :--- | :--- |
+| **Pricing** | **$0 (Free Forever)** | $5.99 (Paid) | $8.99 (Paid) |
+| **AI Smart Renaming** | **✅ (100% Local)** | ❌ | ❌ |
+| **Open Source** | **✅ Yes (MIT)** | ❌ No | ❌ No |
+| **Privacy** | **✅ Zero-Cloud** | ⚠️ Partial | ⚠️ Partial |
+| **Shake to Open** | **✅ Yes** | ✅ Yes | ❌ No |
+| **Notch Glow** | **✅ Yes** | ❌ No | ❌ No |
 
 ---
 
