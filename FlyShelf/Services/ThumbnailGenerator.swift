@@ -26,4 +26,25 @@ class ThumbnailGenerator {
             }
         }
     }
+
+    func generateThumbnail(for item: ShelfItem) async -> NSImage {
+        switch item.contentType {
+        case .file:
+            return NSWorkspace.shared.icon(forFile: item.originalURL.path)
+        case .url:
+            return generateURLThumbnail(url: item.originalURL)
+        case .text:
+            return generateTextThumbnail(text: item.rawContent ?? "")
+        }
+    }
+    
+    private func generateURLThumbnail(url: URL) -> NSImage {
+        // Return a stylized link icon
+        return NSImage(systemSymbolName: "link.circle.fill", accessibilityDescription: "Web Link") ?? NSImage()
+    }
+    
+    private func generateTextThumbnail(text: String) -> NSImage {
+        // Return a stylized text snippet icon
+        return NSImage(systemSymbolName: "doc.text.fill", accessibilityDescription: "Text Snippet") ?? NSImage()
+    }
 }

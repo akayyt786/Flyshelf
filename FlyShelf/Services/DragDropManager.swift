@@ -7,21 +7,43 @@ import UniformTypeIdentifiers
 class DragDropManager: ObservableObject {
     @Published var items: [ShelfItem] = []
     
-    func handleDrop(providers: [NSItemProvider]) -> Bool {
+    func handleProviders(_ providers: [NSItemProvider], shelfID: UUID) -> Bool {
         let group = DispatchGroup()
+        var newItems: [ShelfItem] = []
         
         for provider in providers {
+            group.enter()
+            
+            // 1. Check for Files
             if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-                group.enter()
-                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { (data, error) in
-                    defer { group.leave() }
-                    
-                    if let urlData = data as? Data, let url = URL(dataRepresentation: urlData, relativeTo: nil) {
-                        DispatchQueue.main.async {
-                            self.addURL(url)
-                        }
+                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { (urlData, error) in
+                    if let data = urlData as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
+                        newItems.append(ShelfItem(url: url))
                     }
+                    group.leave()
                 }
+            } 
+            // 2. Check for Web URLs
+            else if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+                provider.loadObject(ofClass: NSURL.self) { (url, error) in
+                    if let url = url as? URL {
+                        newItems.append(ShelfItem(url: url, type: .url, content: url.absoluteString))
+                    }
+                    group.leave()
+                }
+            }
+            // 3. Check for Text Snippets
+            else if provider.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
+                provider.loadObject(ofClass: NSString.self) { (text, error) in
+                    if let text = text as? String {
+                        // Create a temporary "Text" URL placeholder
+                        let tempURL = URL(string: "text://\(UUID().uuidString)")!
+                        newItems.append(ShelfItem(url: tempURL, type: .text, content: text))
+                    }
+                    group.leave()
+                }
+            } else {
+                group.leave()
             }
         }
         

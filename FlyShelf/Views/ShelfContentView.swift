@@ -7,6 +7,7 @@ struct ShelfContentView: View {
     @EnvironmentObject var windowManager: ShelfWindowManager
     @StateObject private var dragDrop = DragDropManager()
     @State private var isDetailViewExpanded = false
+    private let shelfID = UUID()
     
     var body: some View {
         ZStack {
@@ -75,8 +76,8 @@ struct ShelfContentView: View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
         )
-        .onDrop(of: [.fileURL], isTargeted: nil) { providers in
-            dragDrop.handleDrop(providers: providers)
+        .onDrop(of: [.fileURL, .url, .text], isTargeted: nil) { providers in
+            dragDrop.handleProviders(providers, shelfID: shelfID)
         }
     }
 }

@@ -38,7 +38,7 @@ struct ThumbnailView: View {
                 .lineLimit(1)
                 .frame(width: 60)
         }
-        .draggable(item.originalURL) {
+        .draggable(item.originalURL.absoluteString) {
             // Drag Preview
             VStack {
                 if let thumb = item.thumbnail {

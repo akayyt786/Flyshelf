@@ -27,7 +27,7 @@ struct DetailListView: View {
                     Spacer()
                 }
                 .padding(.vertical, 2)
-                .draggable(item.originalURL)
+                .draggable(item.originalURL.absoluteString)
             }
         }
         .listStyle(.plain)
