@@ -1,0 +1,75 @@
+warning: 'dropover free': Invalid Exclude '/Users/armankatia/Documents/dropover free/FlyShelf/Resources/FlyShelf.entitlements': File not found.
+warning: 'dropover free': Invalid Exclude '/Users/armankatia/Documents/dropover free/FlyShelf/Info.plist': File not found.
+[0/1] Planning build
+Building for production...
+[0/3] Write swift-version--1AB21518FC5DEDBE.txt
+[2/4] Compiling FlyShelf AppDelegate.swift
+/Users/armankatia/Documents/dropover free/FlyShelf/Services/ThumbnailGenerator.swift:31:9: error: 'case' label can only appear inside a 'switch' statement
+29 | 
+30 |     func generateThumbnail(for item: ShelfItem) async -> NSImage {
+31 |         case .file, .image:
+   |         `- error: 'case' label can only appear inside a 'switch' statement
+32 |             return NSWorkspace.shared.icon(forFile: item.originalURL.path)
+33 |         case .url:
+
+/Users/armankatia/Documents/dropover free/FlyShelf/Services/ThumbnailGenerator.swift:33:9: error: 'case' label can only appear inside a 'switch' statement
+31 |         case .file, .image:
+32 |             return NSWorkspace.shared.icon(forFile: item.originalURL.path)
+33 |         case .url:
+   |         `- error: 'case' label can only appear inside a 'switch' statement
+34 |             return generateURLThumbnail(url: item.originalURL)
+35 |         case .text:
+
+/Users/armankatia/Documents/dropover free/FlyShelf/Services/ThumbnailGenerator.swift:35:9: error: 'case' label can only appear inside a 'switch' statement
+33 |         case .url:
+34 |             return generateURLThumbnail(url: item.originalURL)
+35 |         case .text:
+   |         `- error: 'case' label can only appear inside a 'switch' statement
+36 |             return generateTextThumbnail(text: item.rawContent ?? "")
+37 |         }
+
+/Users/armankatia/Documents/dropover free/FlyShelf/Services/ThumbnailGenerator.swift:49:1: error: extraneous '}' at top level
+47 |         return NSImage(systemSymbolName: "doc.text.fill", accessibilityDescription: "Text Snippet") ?? NSImage()
+48 |     }
+49 | }
+   | `- error: extraneous '}' at top level
+50 | 
+
+/Users/armankatia/Documents/dropover free/FlyShelf/Services/ActionExecutor.swift:19:13: warning: initialization of immutable value 'picker' was never used; consider replacing with assignment to '_' or removing it
+17 |     func execute(items: [ShelfItem]) async throws {
+18 |         let urls = items.map { $0.originalURL }
+19 |         let picker = NSSharingServicePicker(items: urls)
+   |             `- warning: initialization of immutable value 'picker' was never used; consider replacing with assignment to '_' or removing it
+20 |         // This is tricky without a view reference, usually triggered via UI binding
+21 |     }
+
+/Users/armankatia/Documents/dropover free/FlyShelf/Services/Actions/ImageProcessor.swift:24:19: warning: value 'result' was defined but never used; consider replacing with boolean test
+22 |         try handler.perform([request])
+23 |         
+24 |         guard let result = request.results?.first else {
+   |                   `- warning: value 'result' was defined but never used; consider replacing with boolean test
+25 |             throw NSError(domain: "ImageProcessor", code: 2, userInfo: [NSLocalizedDescriptionKey: "No foreground found"])
+26 |         }
+
+/Users/armankatia/Documents/dropover free/FlyShelf/Services/DragDropManager.swift:40:41: warning: capture of 'self' with non-sendable type 'DragDropManager?' in a '@Sendable' closure
+ 5 | import UniformTypeIdentifiers
+ 6 | 
+ 7 | class DragDropManager: ObservableObject {
+   |       `- note: class 'DragDropManager' does not conform to the 'Sendable' protocol
+ 8 |     @Published var items: [ShelfItem] = []
+ 9 |     
+   :
+38 |                                     let tempURL = PersistenceManager.shared.saveImageBlob(image)
+39 |                                     DispatchQueue.main.async {
+40 |                                         self?.items.append(ShelfItem(url: tempURL, type: .image, content: url.absoluteString))
+   |                                         `- warning: capture of 'self' with non-sendable type 'DragDropManager?' in a '@Sendable' closure
+41 |                                     }
+42 |                                 }
+
+/Users/armankatia/Documents/dropover free/FlyShelf/Views/DetailListView.swift:22:68: warning: left side of nil coalescing operator '??' has non-optional type 'String', so the right side is never used
+20 |                         Text(item.name)
+21 |                             .font(.system(size: 11, weight: .medium))
+22 |                         Text(item.contentType.localizedDescription ?? "Unknown")
+   |                                                                    `- warning: left side of nil coalescing operator '??' has non-optional type 'String', so the right side is never used
+23 |                             .font(.system(size: 9))
+24 |                             .foregroundColor(.secondary)

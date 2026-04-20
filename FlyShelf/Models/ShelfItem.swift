@@ -28,12 +28,14 @@ struct ShelfItem: Identifiable, Codable, Hashable {
         case file
         case url
         case text
+        case image
         
         var localizedDescription: String {
             switch self {
             case .file: return "File"
             case .url: return "Web Link"
             case .text: return "Text Snippet"
+            case .image: return "Browser Image"
             }
         }
     }

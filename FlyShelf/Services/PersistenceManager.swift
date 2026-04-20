@@ -2,6 +2,7 @@
 // This software is provided for personal, non-commercial use only.
 // Commercial redistribution or resale is strictly prohibited.
 import Foundation
+import AppKit
 
 class PersistenceManager {
     static let shared = PersistenceManager()
@@ -31,5 +32,29 @@ class PersistenceManager {
         } catch {
             return []
         }
+    }
+    
+    func saveImageBlob(_ image: NSImage) -> URL {
+        let appSupport = fileURL.deletingLastPathComponent()
+        let blobsDir = appSupport.appendingPathComponent("Blobs")
+        try? FileManager.default.createDirectory(at: blobsDir, withIntermediateDirectories: true)
+        
+        let fileName = "\(UUID().uuidString).png"
+        let fileURL = blobsDir.appendingPathComponent(fileName)
+        
+        if let tiffData = image.tiffRepresentation,
+           let bitmap = NSBitmapImageRep(data: tiffData),
+           let data = bitmap.representation(using: NSBitmapImageRep.FileType.png, properties: [:]) {
+            try? data.write(to: fileURL)
+        }
+        
+        return fileURL
+    }
+    
+    func getBlobsDirectory() -> URL {
+        let appSupport = fileURL.deletingLastPathComponent()
+        let blobsDir = appSupport.appendingPathComponent("Blobs")
+        try? FileManager.default.createDirectory(at: blobsDir, withIntermediateDirectories: true)
+        return blobsDir
     }
 }

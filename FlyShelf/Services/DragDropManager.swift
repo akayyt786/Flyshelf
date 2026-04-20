@@ -8,45 +8,59 @@ class DragDropManager: ObservableObject {
     @Published var items: [ShelfItem] = []
     
     func handleProviders(_ providers: [NSItemProvider], shelfID: UUID) -> Bool {
-        let group = DispatchGroup()
-        var newItems: [ShelfItem] = []
-        
         for provider in providers {
-            group.enter()
-            
-            // 1. Check for Files
+            // 1. Files
             if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { (urlData, error) in
+                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { [weak self] (urlData, error) in
                     if let data = urlData as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
-                        newItems.append(ShelfItem(url: url))
+                        DispatchQueue.main.async { self?.addURL(url) }
                     }
-                    group.leave()
                 }
             } 
-            // 2. Check for Web URLs
-            else if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
-                provider.loadObject(ofClass: NSURL.self) { (url, error) in
-                    if let url = url as? URL {
-                        newItems.append(ShelfItem(url: url, type: .url, content: url.absoluteString))
+            // 2. Images (Elite Fix)
+            else if provider.canLoadObject(ofClass: NSImage.self) {
+                provider.loadObject(ofClass: NSImage.self) { [weak self] (image, error) in
+                    if let image = image as? NSImage {
+                        let tempURL = PersistenceManager.shared.saveImageBlob(image)
+                        DispatchQueue.main.async { 
+                            self?.items.append(ShelfItem(url: tempURL, type: .image, content: "Dropped Image"))
+                        }
                     }
-                    group.leave()
                 }
             }
-            // 3. Check for Text Snippets
-            else if provider.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
-                provider.loadObject(ofClass: NSString.self) { (text, error) in
-                    if let text = text as? String {
-                        // Create a temporary "Text" URL placeholder
-                        let tempURL = URL(string: "text://\(UUID().uuidString)")!
-                        newItems.append(ShelfItem(url: tempURL, type: .text, content: text))
+            // 3. URLs
+            else if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+                provider.loadObject(ofClass: NSURL.self) { [weak self] (url, error) in
+                    if let url = url as? URL {
+                        if ["jpg", "jpeg", "png", "gif", "webp"].contains(url.pathExtension.lowercased()) {
+                            Task {
+                                if let image = await self?.downloadImage(from: url) {
+                                    let tempURL = PersistenceManager.shared.saveImageBlob(image)
+                                    DispatchQueue.main.async {
+                                        self?.items.append(ShelfItem(url: tempURL, type: .image, content: url.absoluteString))
+                                    }
+                                }
+                            }
+                        } else {
+                            DispatchQueue.main.async {
+                                self?.items.append(ShelfItem(url: url, type: .url, content: url.absoluteString))
+                            }
+                        }
                     }
-                    group.leave()
                 }
-            } else {
-                group.leave()
+            }
+            // 4. Text
+            else if provider.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
+                provider.loadObject(ofClass: NSString.self) { [weak self] (text, error) in
+                    if let text = text as? String {
+                        let tempURL = URL(string: "text://\(UUID().uuidString)")!
+                        DispatchQueue.main.async {
+                            self?.items.append(ShelfItem(url: tempURL, type: .text, content: text))
+                        }
+                    }
+                }
             }
         }
-        
         return true
     }
     
@@ -54,6 +68,16 @@ class DragDropManager: ObservableObject {
         let newItem = ShelfItem(url: url)
         if !items.contains(where: { $0.originalURL == url }) {
             items.append(newItem)
+        }
+    }
+    
+    private func downloadImage(from url: URL) async -> NSImage? {
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            return NSImage(data: data)
+        } catch {
+            print("Failed to download image: \(error)")
+            return nil
         }
     }
     

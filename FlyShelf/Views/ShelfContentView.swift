@@ -76,8 +76,8 @@ struct ShelfContentView: View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
         )
-        .onDrop(of: [.fileURL, .url, .text], isTargeted: nil) { providers in
-            dragDrop.handleProviders(providers, shelfID: shelfID)
-        }
+        .overlay(
+            AppKitDropHook(shelfID: shelfID, dragDrop: dragDrop)
+        )
     }
 }
