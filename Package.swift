@@ -15,7 +15,10 @@ let package = Package(
             name: "FlyShelf",
             dependencies: [],
             path: "FlyShelf",
-            exclude: ["Resources", "Resources/FlyShelf.entitlements", "Info.plist"],
+            exclude: ["Resources/FlyShelf.entitlements", "Info.plist"],
+            resources: [
+                .process("Resources")
+            ],
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-enable-bare-slash-regex"])
             ]

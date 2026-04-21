@@ -16,10 +16,18 @@ struct ShelfContentView: View {
             
             VStack(spacing: 0) {
                 // Header
-                HStack {
-                    Circle()
-                        .fill(dragDrop.items.isEmpty ? Color.gray : Color.blue)
-                        .frame(width: 8, height: 8)
+                HStack(spacing: 8) {
+                    if let logoPath = Bundle.main.path(forResource: "Logo", ofType: "png"),
+                       let nsImage = NSImage(contentsOfFile: logoPath) {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 14, height: 14)
+                    } else {
+                        Circle()
+                            .fill(dragDrop.items.isEmpty ? Color.gray : Color.blue)
+                            .frame(width: 8, height: 8)
+                    }
                     
                     Text(isDetailViewExpanded ? "All Items" : (dragDrop.items.isEmpty ? "FlyShelf" : "FlyShelf (\(dragDrop.items.count))"))
                         .font(.system(size: 11, weight: .bold))

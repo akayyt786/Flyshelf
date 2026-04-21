@@ -9,6 +9,7 @@ class ShakeDetector: ObservableObject {
     private var directionChanges: Int = 0
     private var lastDirection: CGFloat = 0 // 1 for right, -1 for left
     private var lastChangeTime: Date = Date()
+    private var lastTriggerTime: Date = Date.distantPast
     
     var onShakeDetected: (() -> Void)?
     
@@ -46,7 +47,11 @@ class ShakeDetector: ObservableObject {
                 lastChangeTime = now
                 
                 if directionChanges >= 3 {
-                    onShakeDetected?()
+                    let now = Date()
+                    if now.timeIntervalSince(lastTriggerTime) > 1.0 {
+                        onShakeDetected?()
+                        lastTriggerTime = now
+                    }
                     directionChanges = 0 // Reset after detection
                 }
             }
