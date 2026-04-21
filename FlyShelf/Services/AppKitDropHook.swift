@@ -114,9 +114,6 @@ class DropHookView: NSView {
     }
     
     override func hitTest(_ point: NSPoint) -> NSView? {
-        if NSApp.currentEvent?.type == .leftMouseDragged || NSEvent.pressedMouseButtons != 0 {
-            return self
-        }
         return nil
     }
 }
