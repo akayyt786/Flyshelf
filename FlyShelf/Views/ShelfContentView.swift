@@ -7,12 +7,19 @@ struct ShelfContentView: View {
     @EnvironmentObject var windowManager: ShelfWindowManager
     @StateObject private var dragDrop = DragDropManager()
     @State private var isDetailViewExpanded = false
+    @State private var isTargeted = false
     private let shelfID = UUID()
     
     var body: some View {
         ZStack {
             VisualEffectBackground()
                 .cornerRadius(10)
+            
+            if isTargeted {
+                Color.blue.opacity(0.15)
+                    .cornerRadius(10)
+                    .transition(.opacity)
+            }
             
             VStack(spacing: 0) {
                 // Header
@@ -82,10 +89,10 @@ struct ShelfContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                .stroke(isTargeted ? Color.blue : Color.primary.opacity(0.1), lineWidth: isTargeted ? 2 : 0.5)
         )
         .overlay(
-            AppKitDropHook(shelfID: shelfID, dragDrop: dragDrop)
+            AppKitDropHook(shelfID: shelfID, dragDrop: dragDrop, isTargeted: $isTargeted)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         )
     }

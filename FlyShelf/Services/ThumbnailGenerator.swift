@@ -29,7 +29,12 @@ class ThumbnailGenerator {
 
     func generateThumbnail(for item: ShelfItem) async -> NSImage {
         switch item.contentType {
-        case .file, .image:
+        case .image:
+            if let image = NSImage(contentsOf: item.originalURL) {
+                return image
+            }
+            return NSWorkspace.shared.icon(forFile: item.originalURL.path)
+        case .file:
             return NSWorkspace.shared.icon(forFile: item.originalURL.path)
         case .url:
             return generateURLThumbnail(url: item.originalURL)

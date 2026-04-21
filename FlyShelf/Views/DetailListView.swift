@@ -19,7 +19,7 @@ struct DetailListView: View {
                     VStack(alignment: .leading) {
                         Text(item.name)
                             .font(.system(size: 11, weight: .medium))
-                        Text(item.contentType.localizedDescription ?? "Unknown")
+                        Text(item.contentType.localizedDescription)
                             .font(.system(size: 9))
                             .foregroundColor(.secondary)
                     }

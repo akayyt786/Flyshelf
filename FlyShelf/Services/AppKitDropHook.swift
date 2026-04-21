@@ -7,9 +7,15 @@ import AppKit
 struct AppKitDropHook: NSViewRepresentable {
     let shelfID: UUID
     @ObservedObject var dragDrop: DragDropManager
+    @Binding var isTargeted: Bool
     
     func makeNSView(context: Context) -> DropHookView {
         let view = DropHookView(shelfID: shelfID, dragDrop: dragDrop)
+        view.onTargetedChange = { targeted in
+            DispatchQueue.main.async {
+                self.isTargeted = targeted
+            }
+        }
         return view
     }
     
@@ -19,13 +25,13 @@ struct AppKitDropHook: NSViewRepresentable {
 class DropHookView: NSView {
     let shelfID: UUID
     let dragDrop: DragDropManager
+    var onTargetedChange: ((Bool) -> Void)?
     
     init(shelfID: UUID, dragDrop: DragDropManager) {
         self.shelfID = shelfID
         self.dragDrop = dragDrop
         super.init(frame: NSRect(x: 0, y: 0, width: 1, height: 1))
         
-        // Register for all elite types including File Promises and standard images
         var types = NSFilePromiseReceiver.readableDraggedTypes.map { NSPasteboard.PasteboardType($0) }
         types.append(.fileURL)
         types.append(.URL)
@@ -33,7 +39,6 @@ class DropHookView: NSView {
         types.append(.html)
         types.append(.png)
         types.append(.tiff)
-        types.append(.pdf)
         registerForDraggedTypes(types)
     }
     
@@ -43,71 +48,71 @@ class DropHookView: NSView {
         super.viewDidMoveToWindow()
         if let window = self.window {
             self.frame = window.contentView?.bounds ?? .zero
-            print("🚀 FlyShelf: DropHook activated. Window Bounds: \(self.frame)")
         }
     }
     
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        print("📁 FlyShelf: Drag entered view area")
+        onTargetedChange?(true)
         return .copy
     }
     
-    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
-        return .copy
+    override func draggingExited(_ sender: NSDraggingInfo?) {
+        onTargetedChange?(false)
+    }
+    
+    override func draggingEnded(_ sender: NSDraggingInfo) {
+        onTargetedChange?(false)
     }
     
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        print("📥 FlyShelf: Drop detected on hook")
         let pasteboard = sender.draggingPasteboard
         
         // 1. Handle File Promises
-        if let promises = pasteboard.readObjects(forClasses: [NSFilePromiseReceiver.self], options: nil) as? [NSFilePromiseReceiver] {
-            if !promises.isEmpty {
-                print("📜 FlyShelf: Detected \(promises.count) File Promises")
-                for promise in promises {
-                    let dest = PersistenceManager.shared.getBlobsDirectory()
-                    promise.receivePromisedFiles(atDestination: dest, operationQueue: .main) { url, error in
-                        print("✅ FlyShelf: Received file promise at \(url)")
-                        DispatchQueue.main.async {
-                            self.dragDrop.addURL(url)
-                        }
+        if let promises = pasteboard.readObjects(forClasses: [NSFilePromiseReceiver.self], options: nil) as? [NSFilePromiseReceiver], !promises.isEmpty {
+            for promise in promises {
+                let dest = PersistenceManager.shared.getBlobsDirectory()
+                promise.receivePromisedFiles(atDestination: dest, operationQueue: .main) { url, error in
+                    DispatchQueue.main.async {
+                        self.dragDrop.addLocalFile(url: url)
                     }
                 }
-                return true
             }
+            return true
         }
         
-        // 2. Handle standard Files (Finder)
-        if let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL] {
-            if !urls.isEmpty {
-                print("📦 FlyShelf: Found \(urls.count) File URLs")
-                for url in urls {
-                    DispatchQueue.main.async {
-                        self.dragDrop.addURL(url)
-                    }
+        // 2. Handle standard Files
+        if let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL], !urls.isEmpty {
+            for url in urls {
+                DispatchQueue.main.async {
+                    self.dragDrop.addLocalFile(url: url)
                 }
-                return true
             }
+            return true
         }
         
-        // 3. Handle Direct Images (Browsers)
-        if let images = pasteboard.readObjects(forClasses: [NSImage.self], options: nil) as? [NSImage] {
-            if !images.isEmpty {
-                print("🖼️ FlyShelf: Found \(images.count) Raw Images")
-                for image in images {
-                    let tempURL = PersistenceManager.shared.saveImageBlob(image)
-                    DispatchQueue.main.async {
-                        self.dragDrop.addURL(tempURL)
-                    }
+        // 3. Handle Direct Images
+        if let images = pasteboard.readObjects(forClasses: [NSImage.self], options: nil) as? [NSImage], !images.isEmpty {
+            for image in images {
+                DispatchQueue.main.async {
+                    self.dragDrop.addImageData(image: image)
                 }
-                return true
             }
+            return true
+        }
+        
+        // 4. Handle Text
+        if let strings = pasteboard.readObjects(forClasses: [NSString.self], options: nil) as? [String], !strings.isEmpty {
+            for string in strings {
+                DispatchQueue.main.async {
+                    self.dragDrop.addText(string: string)
+                }
+            }
+            return true
         }
         
         return true
     }
     
-    // Ensure clicks pass through to SwiftUI buttons unless a drag is in progress
     override func hitTest(_ point: NSPoint) -> NSView? {
         if NSApp.currentEvent?.type == .leftMouseDragged || NSEvent.pressedMouseButtons != 0 {
             return self
