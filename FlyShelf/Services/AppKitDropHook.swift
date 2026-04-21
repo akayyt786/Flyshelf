@@ -62,24 +62,45 @@ class DropHookView: NSView {
         
         // 1. Handle File Promises
         if let promises = pasteboard.readObjects(forClasses: [NSFilePromiseReceiver.self], options: nil) as? [NSFilePromiseReceiver] {
-            print("📜 FlyShelf: Detected \(promises.count) File Promises")
-            for promise in promises {
-                let dest = PersistenceManager.shared.getBlobsDirectory()
-                promise.receivePromisedFiles(atDestination: dest, operationQueue: .main) { url, error in
-                    print("✅ FlyShelf: Received file promise at \(url)")
+            if !promises.isEmpty {
+                print("📜 FlyShelf: Detected \(promises.count) File Promises")
+                for promise in promises {
+                    let dest = PersistenceManager.shared.getBlobsDirectory()
+                    promise.receivePromisedFiles(atDestination: dest, operationQueue: .main) { url, error in
+                        print("✅ FlyShelf: Received file promise at \(url)")
+                        DispatchQueue.main.async {
+                            self.dragDrop.addURL(url)
+                        }
+                    }
+                }
+                return true
+            }
+        }
+        
+        // 2. Handle standard Files (Finder)
+        if let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL] {
+            if !urls.isEmpty {
+                print("📦 FlyShelf: Found \(urls.count) File URLs")
+                for url in urls {
                     DispatchQueue.main.async {
                         self.dragDrop.addURL(url)
                     }
                 }
+                return true
             }
         }
         
-        // 2. Handle standard providers
-        let providers = sender.draggingPasteboard.itemProviders
-        if !providers.isEmpty {
-            print("📦 FlyShelf: Handling \(providers.count) standard providers")
-            DispatchQueue.main.async {
-                _ = self.dragDrop.handleProviders(providers, shelfID: self.shelfID)
+        // 3. Handle Direct Images (Browsers)
+        if let images = pasteboard.readObjects(forClasses: [NSImage.self], options: nil) as? [NSImage] {
+            if !images.isEmpty {
+                print("🖼️ FlyShelf: Found \(images.count) Raw Images")
+                for image in images {
+                    let tempURL = PersistenceManager.shared.saveImageBlob(image)
+                    DispatchQueue.main.async {
+                        self.dragDrop.addURL(tempURL)
+                    }
+                }
+                return true
             }
         }
         
@@ -92,11 +113,5 @@ class DropHookView: NSView {
             return self
         }
         return nil
-    }
-}
-
-extension NSPasteboard {
-    var itemProviders: [NSItemProvider] {
-        return self.readObjects(forClasses: [NSItemProvider.self], options: nil) as? [NSItemProvider] ?? []
     }
 }
