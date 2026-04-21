@@ -27,7 +27,15 @@ struct DetailListView: View {
                     Spacer()
                 }
                 .padding(.vertical, 2)
-                .draggable(item.originalURL.absoluteString)
+                .onDrag {
+                    let provider = NSItemProvider()
+                    if item.contentType == .text, let text = item.rawContent {
+                        provider.registerObject(text as NSString, visibility: .all)
+                    } else {
+                        provider.registerObject(item.originalURL as NSURL, visibility: .all)
+                    }
+                    return provider
+                }
             }
         }
         .listStyle(.plain)

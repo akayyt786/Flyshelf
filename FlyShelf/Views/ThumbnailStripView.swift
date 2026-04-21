@@ -38,20 +38,14 @@ struct ThumbnailView: View {
                 .lineLimit(1)
                 .frame(width: 60)
         }
-        .draggable(item.originalURL.absoluteString) {
-            // Drag Preview
-            VStack {
-                if let thumb = item.thumbnail {
-                    Image(nsImage: thumb)
-                        .resizable()
-                        .frame(width: 64, height: 64)
-                }
-                Text(item.name)
-                    .font(.caption)
-                    .padding(4)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(4)
+        .onDrag {
+            let provider = NSItemProvider()
+            if item.contentType == .text, let text = item.rawContent {
+                provider.registerObject(text as NSString, visibility: .all)
+            } else {
+                provider.registerObject(item.originalURL as NSURL, visibility: .all)
             }
+            return provider
         }
     }
 }
