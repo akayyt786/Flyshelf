@@ -23,7 +23,7 @@ class DropHookView: NSView {
     init(shelfID: UUID, dragDrop: DragDropManager) {
         self.shelfID = shelfID
         self.dragDrop = dragDrop
-        super.init(frame: NSRect(x: 0, y: 0, width: 1, height: 1)) // Initial small non-zero frame
+        super.init(frame: NSRect(x: 0, y: 0, width: 1, height: 1))
         
         // Register for all elite types including File Promises and standard images
         var types = NSFilePromiseReceiver.readableDraggedTypes.map { NSPasteboard.PasteboardType($0) }
@@ -39,7 +39,16 @@ class DropHookView: NSView {
     
     required init?(coder: NSCoder) { fatalError() }
     
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if let window = self.window {
+            self.frame = window.contentView?.bounds ?? .zero
+            print("🚀 FlyShelf: DropHook activated. Window Bounds: \(self.frame)")
+        }
+    }
+    
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        print("📁 FlyShelf: Drag entered view area")
         return .copy
     }
     
@@ -48,14 +57,16 @@ class DropHookView: NSView {
     }
     
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        print("📥 FlyShelf: Drop detected on hook")
         let pasteboard = sender.draggingPasteboard
         
-        // 1. Handle File Promises (The Elite Part)
+        // 1. Handle File Promises
         if let promises = pasteboard.readObjects(forClasses: [NSFilePromiseReceiver.self], options: nil) as? [NSFilePromiseReceiver] {
+            print("📜 FlyShelf: Detected \(promises.count) File Promises")
             for promise in promises {
                 let dest = PersistenceManager.shared.getBlobsDirectory()
                 promise.receivePromisedFiles(atDestination: dest, operationQueue: .main) { url, error in
-                    // In some Swift versions url is non-optional
+                    print("✅ FlyShelf: Received file promise at \(url)")
                     DispatchQueue.main.async {
                         self.dragDrop.addURL(url)
                     }
@@ -63,9 +74,10 @@ class DropHookView: NSView {
             }
         }
         
-        // 2. Handle standard providers (Fall back to DragDropManager logic)
+        // 2. Handle standard providers
         let providers = sender.draggingPasteboard.itemProviders
         if !providers.isEmpty {
+            print("📦 FlyShelf: Handling \(providers.count) standard providers")
             DispatchQueue.main.async {
                 _ = self.dragDrop.handleProviders(providers, shelfID: self.shelfID)
             }
@@ -76,7 +88,6 @@ class DropHookView: NSView {
     
     // Ensure clicks pass through to SwiftUI buttons unless a drag is in progress
     override func hitTest(_ point: NSPoint) -> NSView? {
-        // Check if we are currently handling a drag-and-drop event
         if NSApp.currentEvent?.type == .leftMouseDragged || NSEvent.pressedMouseButtons != 0 {
             return self
         }

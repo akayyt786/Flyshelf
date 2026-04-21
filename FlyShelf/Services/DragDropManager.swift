@@ -65,9 +65,14 @@ class DragDropManager: ObservableObject {
     }
     
     func addURL(_ url: URL) {
+        print("🔗 FlyShelf Manager: Adding URL \(url)")
         let newItem = ShelfItem(url: url)
         if !items.contains(where: { $0.originalURL == url }) {
+            self.objectWillChange.send()
             items.append(newItem)
+            print("✨ FlyShelf Manager: Item added successfully. Total items: \(items.count)")
+        } else {
+            print("⚠️ FlyShelf Manager: Item already exists in shelf")
         }
     }
     
