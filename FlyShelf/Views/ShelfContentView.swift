@@ -86,6 +86,7 @@ struct ShelfContentView: View {
         )
         .overlay(
             AppKitDropHook(shelfID: shelfID, dragDrop: dragDrop)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         )
     }
 }

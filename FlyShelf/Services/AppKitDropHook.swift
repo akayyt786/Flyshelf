@@ -23,14 +23,17 @@ class DropHookView: NSView {
     init(shelfID: UUID, dragDrop: DragDropManager) {
         self.shelfID = shelfID
         self.dragDrop = dragDrop
-        super.init(frame: .zero)
+        super.init(frame: NSRect(x: 0, y: 0, width: 1, height: 1)) // Initial small non-zero frame
         
-        // Register for all elite types including File Promises
+        // Register for all elite types including File Promises and standard images
         var types = NSFilePromiseReceiver.readableDraggedTypes.map { NSPasteboard.PasteboardType($0) }
         types.append(.fileURL)
         types.append(.URL)
         types.append(.string)
         types.append(.html)
+        types.append(.png)
+        types.append(.tiff)
+        types.append(.pdf)
         registerForDraggedTypes(types)
     }
     
@@ -71,8 +74,12 @@ class DropHookView: NSView {
         return true
     }
     
-    // Ensure clicks pass through to SwiftUI buttons unless it's a drag
+    // Ensure clicks pass through to SwiftUI buttons unless a drag is in progress
     override func hitTest(_ point: NSPoint) -> NSView? {
+        // Check if we are currently handling a drag-and-drop event
+        if NSApp.currentEvent?.type == .leftMouseDragged || NSEvent.pressedMouseButtons != 0 {
+            return self
+        }
         return nil
     }
 }
